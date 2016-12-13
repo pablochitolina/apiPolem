@@ -34,9 +34,6 @@ router.route('/previsaopolem')
 router.route('/imagem/:imagename')
   .get(polemController.getImagem);
 
-router.route('/imagem')
-  .post(polemController.postImg);
-
 // Register all our routes with /api
 app.use('/api', router);
 

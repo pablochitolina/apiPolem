@@ -145,18 +145,6 @@ exports.getPrevPolem = function (req, res) {
 
 };
 
-exports.postImg = function (req, res) {
-
-    var nome = 'grafico.png';
-
-    fs.writeFile('uploads/' + nome, req.body.grafico, 'base64', function (err) {
-        if (err)
-            return res.json({ message: 'postImgErr', 'erro': err });
-
-        return res.json({ message: 'postImgSuccess' });
-    });
-
-};
 
 exports.getImagem = function (req, res) {
 
@@ -164,7 +152,7 @@ exports.getImagem = function (req, res) {
         root: __dirname + '/../uploads/'
     };
 
-    var fileName = req.params.imagename;
+    var fileName = 'pred-polen.png';
     res.sendFile(fileName, options, function (err) {
         if (err) {
             console.log(err);
