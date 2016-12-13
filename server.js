@@ -31,6 +31,6 @@ router.route('/previsaomodelo')
 // Register all our routes with /api
 app.use('/api', router);
 
-app.listen(80, function () {
-  console.log("Node server listening on port 80")
+app.listen(3001, function () {
+  console.log("Node server listening on port 3001")
 });
