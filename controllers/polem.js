@@ -40,14 +40,24 @@ exports.getPrevModelo = function (req, res) {
                 //console.log(previsao.daily.data[dia])
             }
 
-            Polem.findOne({ data: req.params.data }, function (err, polem) {
+            /*Polem.findOne({}, {}, { sort: { 'created': -1 } }, function (err, polem) {
                 if (err)
                     return res.json({ message: 'error', err: err });
                 if (polem) {
                     return res.json({ message: 'success', numPolem: polem.numPolem, previsao: previsaoArray });
                 } else {
                     return res.json({ message: 'success', numPolem: 0, previsao: previsaoArray });
-                }
+                };
+            });*/
+
+            Polem.findOne({ data: req.params.data }, function (err, polem) {
+                if (err)
+                    return res.json({ message: 'error', err: err });
+                if (!polem)
+                    return res.json({ message: 'success', numPolem: 0, previsao: previsaoArray });
+
+                return res.json({ message: 'success', numPolem: polem.numPolem, previsao: previsaoArray });
+
             });
 
         })
@@ -57,7 +67,6 @@ exports.getPrevModelo = function (req, res) {
 
 };
 
-
 exports.postPrevModelo = function (req, res) {
 
     var newPolem = new Polem({
@@ -66,6 +75,112 @@ exports.postPrevModelo = function (req, res) {
     });
 
     newPolem.save();
-    
+
     return res.json({ message: 'postResultSuccess', polem: newPolem });
+
+};
+
+exports.getPrevPolem = function (req, res) {
+
+    var previsaoArray = [];
+
+    var milliseconds = (new Date).getTime();
+
+    var index = 0;
+
+    forecast
+        .latitude('-28.26278')
+        .longitude('-52.40667')
+        .units('us')
+        .language('pt')
+        .exclude('minutely,hourly,alerts,flags')
+        .extendHourly(true)
+        .get()
+        .then(function (previsao) {
+
+            for (var dia in previsao.daily.data) {
+
+                var date = new Date(milliseconds);
+                var dataHJ = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+                console.log("hoje " + dataHJ)
+                Polem.findOne({ data: dataHJ }, function (err, polem) {
+                    if (err)
+                        return res.json({ message: 'error', err: err });
+                    if (!polem)
+                        previsaoDaily.numPolem = 0;
+
+                    var previsaoDaily = {
+                        data: String,
+                        tempMax: Number,
+                        tempMin: Number,
+                        umidade: Number,
+                        numPolem: Number
+                    }
+
+                    previsaoDaily.data = polem.data;
+                    previsaoDaily.numPolem = polem.numPolem;
+
+                    if (index == 0) {
+                        previsaoDaily.tempMax = (previsao.currently.temperature - 32) / 1.8;
+                        previsaoDaily.tempMin = (previsao.currently.temperature - 32) / 1.8;
+                        previsaoDaily.umidade = previsao.currently.humidity;
+                    } else {
+                        previsaoDaily.tempMax = (previsao.daily.data[index].temperatureMax - 32) / 1.8;
+                        previsaoDaily.tempMin = (previsao.daily.data[index].temperatureMin - 32) / 1.8;
+                        previsaoDaily.umidade = previsao.daily.data[index].humidity;
+                    }
+
+                    previsaoArray.push(previsaoDaily);
+
+                    index++;
+
+                    if (index == (previsao.daily.data.length )) {
+                        return res.json({ message: 'success', previsao: previsaoArray });
+                    }
+
+
+
+                });
+
+                milliseconds += (1000 * 60 * 60 * 24);
+                //console.log(previsao.daily.data[dia])
+            }
+
+
+
+        })
+        .catch(function (err) {
+            return res.json({ message: 'error', err: err });
+        })
+
+};
+
+exports.postImg = function (req, res) {
+
+    var nome = 'grafico.png';
+
+    fs.writeFile('uploads/' + nome, req.body.grafico, 'base64', function (err) {
+        if (err)
+            return res.json({ message: 'postImgErr', 'erro': err });
+
+        return res.json({ message: 'postImgSuccess' });
+    });
+
+};
+
+exports.getImagem = function (req, res) {
+
+    var options = {
+        root: __dirname + '/../uploads/'
+    };
+
+    var fileName = req.params.imagename;
+    res.sendFile(fileName, options, function (err) {
+        if (err) {
+            console.log(err);
+            res.status(err.status).end();
+        }
+
+    });
+
 };
