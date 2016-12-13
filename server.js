@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-router.route('/previsaomodelo')
+router.route('/previsaomodelo/:data')
   .get(polemController.getPrevModelo);
 
 router.route('/previsaomodelo')
@@ -31,8 +31,9 @@ router.route('/previsaomodelo')
 router.route('/previsaopolem')
   .get(polemController.getPrevPolem);
 
-router.route('/imagem/:imagename')
+router.route('/imagem')
   .get(polemController.getImagem);
+
 
 // Register all our routes with /api
 app.use('/api', router);

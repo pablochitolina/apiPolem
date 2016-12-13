@@ -128,15 +128,11 @@ exports.getPrevPolem = function (req, res) {
                         return res.json({ message: 'success', previsao: previsaoArray });
                     }
 
-
-
                 });
 
                 milliseconds += (1000 * 60 * 60 * 24);
                 //console.log(previsao.daily.data[dia])
             }
-
-
 
         })
         .catch(function (err) {
