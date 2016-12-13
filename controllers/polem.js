@@ -8,8 +8,6 @@ exports.getPrevModelo = function (req, res) {
 
     var previsaoArray = [];
 
-    var milliseconds = (new Date).getTime();
-
     forecast
         .latitude('-28.26278')
         .longitude('-52.40667')
@@ -29,26 +27,14 @@ exports.getPrevModelo = function (req, res) {
                     amplitude: Number
                 }
 
-                var date = new Date(milliseconds);
+                var date = new Date((previsao.daily.data[dia].time * 1000));
 
                 previsaoDaily.amplitude = ampC;
                 previsaoDaily.data = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
                 previsaoArray.push(previsaoDaily);
 
-                milliseconds += (1000 * 60 * 60 * 24);
-                //console.log(previsao.daily.data[dia])
             }
-
-            /*Polem.findOne({}, {}, { sort: { 'created': -1 } }, function (err, polem) {
-                if (err)
-                    return res.json({ message: 'error', err: err });
-                if (polem) {
-                    return res.json({ message: 'success', numPolem: polem.numPolem, previsao: previsaoArray });
-                } else {
-                    return res.json({ message: 'success', numPolem: 0, previsao: previsaoArray });
-                };
-            });*/
 
             Polem.findOne({ data: req.params.data }, function (err, polem) {
                 if (err)
@@ -100,14 +86,13 @@ exports.getPrevPolem = function (req, res) {
 
             for (var dia in previsao.daily.data) {
 
-                var date = new Date(milliseconds);
-                var dataHJ = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-                console.log("hoje " + dataHJ)
-                Polem.findOne({ data: dataHJ }, function (err, polem) {
+                var date = new Date((previsao.daily.data[dia].time * 1000));
+                var dataPrev = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+
+                Polem.findOne({ data: dataPrev }, function (err, polem) {
                     if (err)
                         return res.json({ message: 'error', err: err });
-                    if (!polem)
-                        previsaoDaily.numPolem = 0;
 
                     var previsaoDaily = {
                         data: String,
@@ -117,7 +102,12 @@ exports.getPrevPolem = function (req, res) {
                         numPolem: Number
                     }
 
-                    previsaoDaily.data = polem.data;
+                    if (!polem)
+                        previsaoDaily.numPolem = 0;
+
+                    var dateArr = new Date((previsao.daily.data[index].time * 1000));
+
+                    previsaoDaily.data = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();;
                     previsaoDaily.numPolem = polem.numPolem;
 
                     if (index == 0) {
@@ -134,7 +124,7 @@ exports.getPrevPolem = function (req, res) {
 
                     index++;
 
-                    if (index == (previsao.daily.data.length )) {
+                    if (index == (previsao.daily.data.length)) {
                         return res.json({ message: 'success', previsao: previsaoArray });
                     }
 
