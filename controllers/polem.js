@@ -107,7 +107,7 @@ exports.getPrevPolem = function (req, res) {
 
                     var dateArr = new Date((previsao.daily.data[index].time * 1000));
 
-                    previsaoDaily.data = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();;
+                    previsaoDaily.data = dateArr.getFullYear() + "-" + (dateArr.getMonth() + 1) + "-" + dateArr.getDate();;
                     previsaoDaily.numPolem = polem.numPolem;
 
                     if (index == 0) {
