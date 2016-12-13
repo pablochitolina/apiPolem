@@ -66,6 +66,24 @@ exports.postPrevModelo = function (req, res) {
 
 };
 
+exports.putPrevModelo = function (req, res) {
+
+    Polem.findOne({data : req.body.data}, function (err, polem) {
+        if (err)
+            return res.send(err);
+        if (!polem)
+            return res.json({ message: 'nopolem' });
+
+        polem.numPolem = req.body.numPolem;
+
+        polem.save();
+
+        res.json({ message: 'putPolemSuccess', polem: polem });
+
+    });
+
+};
+
 exports.getPrevPolem = function (req, res) {
 
     var previsaoArray = [];
@@ -148,7 +166,7 @@ exports.getImagem = function (req, res) {
         root: __dirname + '/../uploads/'
     };
 
-    var fileName = 'pred-polen.png';
+    var fileName = 'polen-pred.png';
     res.sendFile(fileName, options, function (err) {
         if (err) {
             console.log(err);
@@ -158,3 +176,4 @@ exports.getImagem = function (req, res) {
     });
 
 };
+

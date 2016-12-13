@@ -26,6 +26,7 @@ router.route('/previsaomodelo/:data')
   .get(polemController.getPrevModelo);
 
 router.route('/previsaomodelo')
+  .put(polemController.putPrevModelo)
   .post(polemController.postPrevModelo);
 
 router.route('/previsaopolem')
